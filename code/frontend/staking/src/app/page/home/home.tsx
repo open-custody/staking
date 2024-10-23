@@ -11,7 +11,7 @@ import * as Web3Service from "../../services/web3.service";
 import Input from "../../atom/input/input";
 import Button from "../../atom/button/button";
 import Footer from "../../molecule/footer/footer";
-import Slider from "../../molecule/slider/slider";
+// import Slider from "../../molecule/slider/slider";
 import { ApyType } from "../../types/apy.type";
 import { BalanceType } from "../../types/balance.type";
 import dayjs from "dayjs";
@@ -70,6 +70,8 @@ function HomePage() {
 
     const [amountAvailable, setAmountAvailable] = useState<number>(0);
 
+    const [amountOCPAvailable, setAmountOCPAvailable] = useState<number>(0);
+
     const [amountTvl, setAmountTvl] = useState<number>(0);
 
     const [valuePeriod, setValuePeriod] = useState<number>(0);
@@ -109,6 +111,7 @@ function HomePage() {
     useEffect(() => {
         getBalanceTotal().then((r) => r);
         getBalanceToken().then((r) => r);
+        getBalanceOCPToken().then((r) => r);
         getCurrentBalanceStaking().then((r) => r);
     }, [address, valuePeriod]);
 
@@ -118,6 +121,7 @@ function HomePage() {
     useEffect(() => {
         getBalanceTotal().then((r) => r);
         getBalanceToken().then((r) => r);
+        getBalanceOCPToken().then((r) => r);
         getBalanceStaking().then((r) => r);
         getCurrentBalanceStaking().then((r) => r);
     }, [refresh, isConnected]);
@@ -276,7 +280,7 @@ function HomePage() {
     }
 
     /**
-     * Get the balance of available token
+     * Get the balance of available open token
      */
     async function getBalanceToken() {
         const balance: any = await Web3Service.balanceToken(
@@ -287,6 +291,20 @@ function HomePage() {
         const amount: any = Web3Service.getAmount(balance);
 
         setAmountAvailable(amount);
+    }
+
+    /**
+     * Get the balance of available ocp token
+     */
+    async function getBalanceOCPToken() {
+        const balance: any = await Web3Service.balanceOCPToken(
+            walletProvider,
+            isConnected,
+            address
+        );
+        const amount: any = Web3Service.getOCPAmount(balance);
+
+        setAmountOCPAvailable(amount);
     }
 
     /**
@@ -372,11 +390,11 @@ function HomePage() {
      * Function when the period value change
      * @param value
      */
-    async function onChangePeriodValue(value: number) {
-        setValuePeriod(value);
-        // @ts-ignore
-        setEstimatedApy(listApy[value]);
-    }
+    // async function onChangePeriodValue(value: number) {
+    //     setValuePeriod(value);
+    //     // @ts-ignore
+    //     setEstimatedApy(listApy[value]);
+    // }
 
     /**
      * Function to check value stake
@@ -394,7 +412,7 @@ function HomePage() {
             <NavBar />
             <div className={"home-component"}>
                 <div className={"home-content"}>
-                    <div className={"home-title"}>
+                    {/* <div className={"home-title"}>
                         <Title
                             text={"Stake $OPEN Earn Rewards"}
                             size={"big"}
@@ -403,7 +421,7 @@ function HomePage() {
                             weight={"bold"}
                             level={2}
                         />
-                    </div>
+                    </div> */}
                     <div className="dashboard">
                         <div className={"content-top"}>
                             <div className={"left"}>
@@ -450,18 +468,13 @@ function HomePage() {
                             </div>
                             {/* <div className={"right"}>
                                 <Paragraph
-                                    text={"Staked $OPEN"}
+                                    text={"Estimated APY"}
                                     size={"medium"}
                                     weight={"normal"}
                                     color={"dark"}
                                 />
                                 <Title
-                                    text={String(
-                                        amountTotalStaked.toLocaleString(
-                                            "en-US",
-                                            { maximumFractionDigits: 3 }
-                                        )
-                                    )}
+                                    text={"40%"}
                                     size={"medium"}
                                     styleFont={"normal"}
                                     color={"dark"}
@@ -471,7 +484,87 @@ function HomePage() {
                             </div> */}
                         </div>
                         <div className={"content-middle"}>
-                            <div className={"left"}>
+                            <div className={"estimated"}>
+                                <Paragraph
+                                    text={"Estimated APY"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={"40%"}
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"duration"}>
+                                <Paragraph
+                                    text={"Duration"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={"1 month"}
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"start-date"}>
+                                <Paragraph
+                                    text={"Start Date"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={
+                                        balance6Month.lockStart > 0
+                                            ? dayjs
+                                                  .unix(balance6Month.lockStart)
+                                                  .format("MMM, DD YYYY")
+                                            : "-"
+                                    }
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"release-date"}>
+                                <Paragraph
+                                    text={"Release Date"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={
+                                        balance6Month.lockStart > 0
+                                            ? `${dayjs()
+                                                  .add(
+                                                      balance6Month.lockRemaining,
+                                                      "second"
+                                                  )
+                                                  .format("MMM, DD YYYY")}`
+                                            : "-"
+                                    }
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+
+                            {/* <div className={"left"}>
                                 <Slider
                                     onChange={(e: any) =>
                                         onChangePeriodValue(Number(e))
@@ -479,7 +572,7 @@ function HomePage() {
                                     max={3}
                                     min={0}
                                     value={valuePeriod}
-                                />
+                                /> 
                                 <ul>
                                     <li>
                                         <Paragraph
@@ -524,7 +617,7 @@ function HomePage() {
                                         color={"dark"}
                                     />
                                     <Title
-                                        text={`${String(estimatedApy)}%`}
+                                        text={"40%"}
                                         size={"medium"}
                                         styleFont={"normal"}
                                         color={"dark"}
@@ -532,11 +625,12 @@ function HomePage() {
                                         level={4}
                                     />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         <div className={"content-bottom"}>
                             <div className={"left"}>
-                                <div className={"staked"}>
+                                {/* <div className={"staked"}> */}
+                                <div>
                                     <Paragraph
                                         text={"Your Staked $OPEN"}
                                         size={"medium"}
@@ -557,37 +651,85 @@ function HomePage() {
                                         level={4}
                                     />
                                 </div>
+                                <div className={"unstake-button"}>
+                                    <Button
+                                        click={() => unstake(1)}
+                                        color={"dark"}
+                                        styleButton="primary"
+                                        loading={isLoadingUnstake}
+                                        disabled={
+                                            !isConnected ||
+                                            balance1Month.lockRemaining /
+                                                86400 >
+                                                0 ||
+                                            balance1Month.balance === 0
+                                        }
+                                        text={"Unstake"}
+                                    ></Button>
+                                </div>
+                                {/* </div> */}
                             </div>
                             <div className={"middle"}>
-                                <Paragraph
-                                    text={"Upcoming $OPEN Rewards"}
-                                    size={"medium"}
-                                    weight={"normal"}
-                                    color={"dark"}
-                                />
-                                <div className={"amount-claim"}>
-                                    <Title
-                                        text={`${String(
-                                            userRewardTotal.toLocaleString(
-                                                "en-US",
-                                                { maximumFractionDigits: 3 }
-                                            )
-                                        )}`}
-                                        size={"medium"}
-                                        weight={"bold"}
-                                        color={"dark"}
-                                        level={5}
-                                    />
-                                </div>
-                            </div>
-                            <div className={"right"}>
-                                <div className={"stake"}>
+                                <div>
                                     <Paragraph
-                                        text={"Select an amount to Stake:"}
+                                        text={"$OPEN Rewards"}
                                         size={"medium"}
                                         weight={"normal"}
                                         color={"dark"}
                                     />
+                                    <div className={"amount-claim"}>
+                                        <Title
+                                            text={`${String(
+                                                userRewardTotal.toLocaleString(
+                                                    "en-US",
+                                                    { maximumFractionDigits: 3 }
+                                                )
+                                            )}`}
+                                            size={"medium"}
+                                            weight={"bold"}
+                                            color={"dark"}
+                                            level={5}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={"claim-button"}>
+                                    <Button
+                                        click={() => claim(0)}
+                                        color={"dark"}
+                                        styleButton="primary"
+                                        loading={isLoadingClaim}
+                                        disabled={balance1Month.rewards <= 0}
+                                        text={"Claim"}
+                                    ></Button>
+                                </div>
+                            </div>
+                            <div className={"right"}>
+                                <div className={"stake"}>
+                                    {/* <Paragraph
+                                        text={"Select an amount to Stake:"}
+                                        size={"medium"}
+                                        weight={"normal"}
+                                        color={"dark"}
+                                    /> */}
+                                    <div className={"available"}>
+                                        <Paragraph
+                                            text={"Available $OPEN Balance:"}
+                                            size={"medium"}
+                                            weight={"normal"}
+                                            color={"dark"}
+                                        />
+                                        <Paragraph
+                                            text={String(
+                                                amountAvailable.toLocaleString(
+                                                    "en-US",
+                                                    { maximumFractionDigits: 3 }
+                                                )
+                                            )}
+                                            size={"medium"}
+                                            weight={"bold"}
+                                            color={"dark"}
+                                        />
+                                    </div>
                                     <div className={"amount-stack"}>
                                         <Input
                                             pattern={"\\d+(\\.\\d{1,3})?"}
@@ -615,30 +757,11 @@ function HomePage() {
                                             loading={isLoadingStake}
                                         ></Button>
                                     </div>
-                                    <div className={"available"}>
-                                        <Paragraph
-                                            text={"Available $OPEN Balance:"}
-                                            size={"medium-2"}
-                                            weight={"normal"}
-                                            color={"dark"}
-                                        />
-                                        <Paragraph
-                                            text={String(
-                                                amountAvailable.toLocaleString(
-                                                    "en-US",
-                                                    { maximumFractionDigits: 3 }
-                                                )
-                                            )}
-                                            size={"medium"}
-                                            weight={"bold"}
-                                            color={"dark"}
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="dashboard">
+                    {/* <div className="dashboard">
                         <table>
                             <thead>
                                 <tr>
@@ -1169,6 +1292,256 @@ function HomePage() {
                                 </tr>
                             </tbody>
                         </table>
+                    </div> */}
+
+                    <div className="dashboard">
+                        <div className={"content-top"}>
+                            <div className={"left"}>
+                                <Paragraph
+                                    text={"Total $OCP Staked"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={
+                                        String(
+                                            amountTotalStaked.toLocaleString(
+                                                "en-US",
+                                                {
+                                                    maximumFractionDigits: 3,
+                                                }
+                                            )
+                                        ) +
+                                        " (" +
+                                        amountTotalStakedPercentage.toLocaleString(
+                                            "en-US",
+                                            {
+                                                maximumFractionDigits: 2,
+                                            }
+                                        ) +
+                                        "%)"
+                                    }
+                                    size={"medium"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                        </div>
+                        <div className={"content-middle"}>
+                            <div className={"estimated"}>
+                                <Paragraph
+                                    text={"Estimated APY"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={"40%"}
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"duration"}>
+                                <Paragraph
+                                    text={"Duration"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={"1 month"}
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"start-date"}>
+                                <Paragraph
+                                    text={"Start Date"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={
+                                        balance6Month.lockStart > 0
+                                            ? dayjs
+                                                  .unix(balance6Month.lockStart)
+                                                  .format("MMM, DD YYYY")
+                                            : "-"
+                                    }
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                            <div className={"release-date"}>
+                                <Paragraph
+                                    text={"Release Date"}
+                                    size={"medium"}
+                                    weight={"normal"}
+                                    color={"dark"}
+                                />
+                                <Title
+                                    text={
+                                        balance6Month.lockStart > 0
+                                            ? `${dayjs()
+                                                  .add(
+                                                      balance6Month.lockRemaining,
+                                                      "second"
+                                                  )
+                                                  .format("MMM, DD YYYY")}`
+                                            : "-"
+                                    }
+                                    size={"small"}
+                                    styleFont={"normal"}
+                                    color={"dark"}
+                                    weight={"bold"}
+                                    level={4}
+                                />
+                            </div>
+                        </div>
+                        <div className={"content-bottom"}>
+                            <div className={"left"}>
+                                <div>
+                                    <Paragraph
+                                        text={"Your Staked $OCP"}
+                                        size={"medium"}
+                                        weight={"normal"}
+                                        color={"dark"}
+                                    />
+                                    <Title
+                                        text={`${String(
+                                            userStakingTotal.toLocaleString(
+                                                "en-US",
+                                                { maximumFractionDigits: 3 }
+                                            )
+                                        )}`}
+                                        size={"medium"}
+                                        styleFont={"normal"}
+                                        color={"dark"}
+                                        weight={"bold"}
+                                        level={4}
+                                    />
+                                </div>
+                                <div className={"unstake-button"}>
+                                    <Button
+                                        click={() => unstake(1)}
+                                        color={"dark"}
+                                        styleButton="primary"
+                                        loading={isLoadingUnstake}
+                                        disabled={
+                                            !isConnected ||
+                                            balance1Month.lockRemaining /
+                                                86400 >
+                                                0 ||
+                                            balance1Month.balance === 0
+                                        }
+                                        text={"Unstake"}
+                                    ></Button>
+                                </div>
+                            </div>
+                            <div className={"middle"}>
+                                <div>
+                                    <Paragraph
+                                        text={"$OCP Rewards"}
+                                        size={"medium"}
+                                        weight={"normal"}
+                                        color={"dark"}
+                                    />
+                                    <div className={"amount-claim"}>
+                                        <Title
+                                            text={`${String(
+                                                userRewardTotal.toLocaleString(
+                                                    "en-US",
+                                                    { maximumFractionDigits: 3 }
+                                                )
+                                            )}`}
+                                            size={"medium"}
+                                            weight={"bold"}
+                                            color={"dark"}
+                                            level={5}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={"claim-button"}>
+                                    <Button
+                                        click={() => claim(0)}
+                                        color={"dark"}
+                                        styleButton="primary"
+                                        loading={isLoadingClaim}
+                                        disabled={balance1Month.rewards <= 0}
+                                        text={"Claim"}
+                                    ></Button>
+                                </div>
+                            </div>
+                            <div className={"right"}>
+                                <div className={"stake"}>
+                                    {/* <Paragraph
+                                        text={"Select an amount to Stake:"}
+                                        size={"medium"}
+                                        weight={"normal"}
+                                        color={"dark"}
+                                    /> */}
+                                    <div className={"available"}>
+                                        <Paragraph
+                                            text={"Available $OCP Balance:"}
+                                            size={"medium"}
+                                            weight={"normal"}
+                                            color={"dark"}
+                                        />
+                                        <Paragraph
+                                            text={String(
+                                                amountOCPAvailable.toLocaleString(
+                                                    "en-US",
+                                                    { maximumFractionDigits: 3 }
+                                                )
+                                            )}
+                                            size={"medium"}
+                                            weight={"bold"}
+                                            color={"dark"}
+                                        />
+                                    </div>
+                                    <div className={"amount-stack"}>
+                                        <Input
+                                            pattern={"\\d+(\\.\\d{1,3})?"}
+                                            onChange={(e) =>
+                                                checkValue(e.target.value)
+                                            }
+                                            type={"text"}
+                                            style={"input"}
+                                            color={"dark"}
+                                            value={valueToStake}
+                                            name={"stake"}
+                                            error={false}
+                                        />
+                                        <Button
+                                            click={() => stake()}
+                                            color={"dark"}
+                                            styleButton="primary"
+                                            text={"Stake"}
+                                            disabled={
+                                                Number(valueToStake) <= 0 ||
+                                                Number(valueToStake) >=
+                                                    amountOCPAvailable ||
+                                                amountOCPAvailable === 0
+                                            }
+                                            loading={isLoadingStake}
+                                        ></Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <Footer />

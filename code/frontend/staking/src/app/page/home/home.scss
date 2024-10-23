@@ -13,8 +13,8 @@
   box-sizing: border-box;
 
   .home-content {
-    max-width: rem(1340);
-    width: rem(993);
+    max-width: rem(1200);
+    width: 100%;
     margin-bottom: rem(100);
 
     .home-title {
@@ -27,6 +27,7 @@
     }
 
     .dashboard {
+      background: #fff;
       padding: rem(30) rem(40);
       box-sizing: border-box;
       display: flex;
@@ -37,7 +38,7 @@
       margin-bottom: rem(50);
 
       &:last-child {
-        padding: rem(10) rem(40);
+        // padding: rem(10) rem(40);
       }
 
       .content-top {
@@ -69,7 +70,7 @@
         width: 100%;
         border-bottom: rem(1) solid map-get($colors, 'dark');
         padding-bottom: rem(30);
-        padding-right: rem(65);
+        // padding-right: rem(65);
         box-sizing: border-box;
 
         & > .left {
@@ -108,15 +109,23 @@
         gap: rem(35);
         width: 100%;
 
+        button {
+          height: 2.5rem;
+        }
+
         & > .left {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           gap: rem(24);
-          border-right: rem(1) solid map-get($colors, 'dark');
-          padding-right:  rem(80);
+          // border-right: rem(1) solid map-get($colors, 'dark');
+          // padding-right:  rem(80);
           box-sizing: border-box;
-          height: rem(114);
+          // height: rem(114);
+
+          & > .unstake-button {
+            padding-top: rem(25);
+          }
 
           & > .unstake {
 
@@ -143,8 +152,13 @@
 
         & > .middle {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           justify-content: space-between;
+          gap: rem(24);
+
+          & > .claim-button {
+            padding-top: rem(25);
+          }
 
           & > .amount-claim {
             display: flex;
@@ -164,7 +178,7 @@
           flex-direction: row;
           justify-content: space-between;
           gap: rem(24);
-          border-left: rem(1) solid map-get($colors, 'dark');
+          // border-left: rem(1) solid map-get($colors, 'dark');
           padding-left: rem(80);
           box-sizing: border-box;
 
@@ -174,7 +188,7 @@
               display: flex;
               flex-direction: row;
               gap: rem(10);
-              padding: rem(10) 0;
+              padding: 0 0 rem(5) 0;
               box-sizing: border-box;
 
               & > button {
